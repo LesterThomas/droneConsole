@@ -1,0 +1,53 @@
+{
+	"id": "a051e5cc-a0bc-9444-189b-0dc976634aa9",
+	"name": "Drone API - query status",
+	"description": "",
+	"order": [
+		"78784e81-b4db-3de5-f8ad-d46346029d12",
+		"6c4ffcb8-a8ec-b690-924e-a09e1c38da0e"
+	],
+	"folders": [],
+	"timestamp": 1485344257579,
+	"owner": "770652",
+	"public": false,
+	"requests": [
+		{
+			"id": "6c4ffcb8-a8ec-b690-924e-a09e1c38da0e",
+			"headers": "Channel-Type: 601\nPassword: Abc1234%1Hblsqt!\nLogin-System-Code: TMF\nRegion-Id: 18\nBe-Id: 18\n",
+			"url": "https://222.92.146.245:12900/openAPI/httpservices/customer-mgmt/v1/accounts?account-code=31000000000&include-bill-cycle=Y&include-credit-limit=Y&include-deactivation=Y&include-payment-channel=Y&include-contract-person=Y",
+			"preRequestScript": null,
+			"pathVariables": {},
+			"method": "GET",
+			"data": null,
+			"dataMode": "params",
+			"tests": null,
+			"currentHelper": "normal",
+			"helperAttributes": {},
+			"time": 1485401205083,
+			"name": "Query account information by account-code",
+			"description": "The account-code is at the AccountCode column in the prepared Customer & Account  data sheet.\n",
+			"collectionId": "a051e5cc-a0bc-9444-189b-0dc976634aa9",
+			"responses": []
+		},
+		{
+			"id": "78784e81-b4db-3de5-f8ad-d46346029d12",
+			"headers": "Channel-Type: 601\nPassword: Abc1234%1Hblsqt!\nLogin-System-Code: TMF\nRegion-Id: 18\nBe-Id: 18\n",
+			"url": "https://222.92.146.245:12900/openAPI/httpservices/customer-mgmt/v1/accounts?account-id=31000000000&include-bill-cycle=Y&include-credit-limit=Y&include-deactivation=Y&include-payment-channel=Y&include-contract-person=Y",
+			"pathVariables": {},
+			"preRequestScript": null,
+			"method": "GET",
+			"collectionId": "a051e5cc-a0bc-9444-189b-0dc976634aa9",
+			"data": null,
+			"dataMode": "params",
+			"name": "Query account information by account-id",
+			"description": "The account-id is at the AccountID column in the prepared Customer & Account  data sheet.\n",
+			"descriptionFormat": "html",
+			"time": 1485344257578,
+			"version": 2,
+			"responses": [],
+			"tests": null,
+			"currentHelper": "normal",
+			"helperAttributes": {}
+		}
+	]
+}
