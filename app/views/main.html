@@ -92,13 +92,12 @@
 		</div>
 	</div>
 </div>
-
 <div  class="col-lg-6 col-sm-12">			
 	<div class="panel panel-default panel-primary">
 		<div class="panel-heading">Actions </div>
 		<div class="panel-body">
 			<div class="panel-group" id="accordion">
-			  <div ng-repeat="action in availableActions" class="panel panel-default">
+			  <div ng-repeat="action in actions.availableActions" class="panel panel-default">
 				<div class="panel-heading">
 				  <h4 class="panel-title">
 					<a data-toggle="collapse" data-parent="#accordion" data-target="{{'#'+action.name}}">{{action.name}}</a>
@@ -107,22 +106,13 @@
 				<div id="{{action.name}}" class="panel-collapse collapse">
 				  <div class="panel-body">
 					<p>{{action.description}}</p>
-					<p>{{action.attributes}}</p>
 					<div class="container-fluid">
-							<div class="row form-inline" ng-repeat="attribute in action.attributes" >
-								<div ng-switch on="attribute.name">
-									<div ng-switch-when="name">
-										<button type="button" class="btn btn-primary" ng-click='actionButton(action)'>{{attribute.value}}</button>
-									</div>
-									<div ng-switch-default>
-										<label class="col-lg-2 col-md-2 col-sm-2 col-xs-2" for="usr">{{attribute.name}}:</label>
-										<input type="text" class="col-lg-4 col-md-4 col-sm-4 col-xs-4 form-control" name="attribute.name" ng-model="attribute.value" />
-									</div>
-								</div>
-
-							</div>
+						<div class="row form-inline" ng-repeat="attribute in action.attributes" >
+							<label class="col-lg-2 col-md-2 col-sm-2 col-xs-2" for="usr">{{attribute.name}}:</label>
+							<input type="text" class="col-lg-4 col-md-4 col-sm-4 col-xs-4 form-control" name="attribute.name" ng-model="attribute.value" />
+						</div>
+						<button type="button" class="btn btn-primary" ng-click='actionButton(action)'>{{action.name}}</button>
 					</div>
-					
 				  </div>
 				</div>
 			  </div>

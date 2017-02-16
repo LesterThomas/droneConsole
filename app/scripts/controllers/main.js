@@ -19,8 +19,7 @@ angular.module('droneFrontendApp')
   	console.log('Started controller'); 
 	$scope.status='Loading';
 	$scope.vehicleStatus={};
-	
-	
+	$scope.actions={availableActions:{}};
 	//graph data for Battery
 	$scope.batteryCurrent = {};
 	
@@ -128,7 +127,7 @@ angular.module('droneFrontendApp')
 	$scope.markers=[];
 	//console.log('Calling API'); 
 	var intervalTimer = $interval(updateDrone, 1000);
-	//var intervalActionsTimer = $interval(updateActions, 2000);
+	var intervalActionsTimer = $interval(updateActions, 10000);
 	updateActions();
 	function updateDrone() {
 		$http.get('http://sail.vodafone.com/drone/vehicle/1/').
@@ -211,12 +210,19 @@ angular.module('droneFrontendApp')
 		}
 		console.log('Sending POST with payload ',payload);
 
-		$http.post('http://sail.vodafone.com/drone/vehicle/1/action',payload).then(function(data, status, headers, config) {
-			console.log('API  action POST success',data,status);	
+		$http.post('http://sail.vodafone.com/drone/vehicle/1/action',payload,{
+    headers : {
+        'Content-Type' : 'application/x-www-form-urlencoded; charset=UTF-8'
+    }
+}).then(function(data, status, headers, config) {
+			console.log('API  action POST success',data,status);
+			updateActions();
+			
 		},
 		function(data, status, headers, config) {
 		  // log error
 			console.log('API actions POST error',data, status, headers, config);
+			updateActions();
 		});
 
 	}
@@ -225,16 +231,44 @@ angular.module('droneFrontendApp')
 		$http.get('http://sail.vodafone.com/drone/vehicle/1/action').
 		    then(function(data, status, headers, config) {
 					console.log('API action get success',data,status);	
-					$scope.availableActions=data.data.availableActions;
+					//add or delete actions - if unchanged then leave model unchanged
+					
+					//$scope.actions.availableActions=data.data.availableActions;
+					
 					//manipulate the model
-					for(var action in $scope.availableActions) {
-
-						$scope.availableActions[action].attributes=[];
-						for(var i in $scope.availableActions[action].samplePayload) {
-							$scope.availableActions[action].attributes.push({name:i,value:$scope.availableActions[action].samplePayload[i]});
-							console.log (i,$scope.availableActions[action].samplePayload[i]);
+					for(var action in data.data.availableActions) {
+						var actionName=data.data.availableActions[action].name;
+						if ($scope.actions.availableActions[actionName]) {  //if action already exists, do nothing
+						} else
+						{
+							$scope.actions.availableActions[actionName]=data.data.availableActions[action];
+							
+							
+							$scope.actions.availableActions[actionName].attributes=[];
+							for(var i in $scope.actions.availableActions[actionName].samplePayload) {
+								if (i!='name'){//do not push the name attribute
+									$scope.actions.availableActions[actionName].attributes.push({name:i,value:$scope.actions.availableActions[actionName].samplePayload[i]});
+									console.log (i,$scope.actions.availableActions[actionName].samplePayload[i]);
+								}
+							}
 						}
 					}
+					//check if actions are no longer present
+					for(var action in $scope.actions.availableActions) {
+						var actionName=$scope.actions.availableActions[action].name;
+						var found=false;
+						for (var index in data.data.availableActions) {
+							if (data.data.availableActions[index].name==actionName) {
+								found=true;
+							}
+						}
+						if (found==false) { //remove action
+							delete $scope.actions.availableActions[action];
+						}
+
+					}
+					
+					
 						
 				},
 				function(data, status, headers, config) {
