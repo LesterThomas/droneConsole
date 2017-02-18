@@ -9,7 +9,7 @@
  */
    
 angular.module('droneFrontendApp')
-  .controller('MainCtrl', ['$scope', '$http','NgMap','$interval',function ($scope,$http,NgMap,$interval) {
+  .controller('MainCtrl', ['$scope', '$http','NgMap','$interval','$location',function ($scope,$http,NgMap,$interval,$location) {
 	  
 
 	  
@@ -17,6 +17,8 @@ angular.module('droneFrontendApp')
 	  
 	  
   	console.log('Started controller'); 
+  	$scope.apiURL='http://sail.vodafone.com/drone/';
+
 	$scope.status='Loading';
 	$scope.vehicleStatus={};
 	$scope.actions={availableActions:{}};
@@ -127,10 +129,10 @@ angular.module('droneFrontendApp')
 	$scope.markers=[];
 	//console.log('Calling API'); 
 	var intervalTimer = $interval(updateDrone, 1000);
-	var intervalActionsTimer = $interval(updateActions, 10000);
+	var intervalActionsTimer = $interval(updateActions, 2000);
 	updateActions();
 	function updateDrone() {
-		$http.get('http://sail.vodafone.com/drone/vehicle/1/').
+		$http.get($scope.apiURL + 'vehicle/1/').
 		    then(function(data, status, headers, config) {
 					//console.log('API get success',data,status);	
 					$scope.vehicleStatus=data.data.vehicleStatus;
@@ -208,27 +210,26 @@ angular.module('droneFrontendApp')
 		for (var i=0;i<inAction.attributes.length;i++) {
 			payload[inAction.attributes[i].name]=inAction.attributes[i].value;
 		}
+		payload['name']=inAction.name;
 		console.log('Sending POST with payload ',payload);
 
-		$http.post('http://sail.vodafone.com/drone/vehicle/1/action',payload,{
+		$http.post($scope.apiURL + 'vehicle/1/action',payload,{
     headers : {
-        'Content-Type' : 'application/x-www-form-urlencoded; charset=UTF-8'
+        'Content-Type' : 'application/json; charset=UTF-8'
     }
 }).then(function(data, status, headers, config) {
 			console.log('API  action POST success',data,status);
-			updateActions();
 			
 		},
 		function(data, status, headers, config) {
 		  // log error
 			console.log('API actions POST error',data, status, headers, config);
-			updateActions();
 		});
 
 	}
 
 	function updateActions() {
-		$http.get('http://sail.vodafone.com/drone/vehicle/1/action').
+		$http.get($scope.apiURL + 'vehicle/1/action').
 		    then(function(data, status, headers, config) {
 					console.log('API action get success',data,status);	
 					//add or delete actions - if unchanged then leave model unchanged
