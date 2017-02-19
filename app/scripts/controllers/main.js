@@ -17,11 +17,13 @@ angular.module('droneFrontendApp')
 	  
 	  
   	console.log('Started controller'); 
-  	$scope.apiURL='http://sail.vodafone.com/drone/';
+  	$scope.apiURL='http://localhost:1235/'; //http://sail.vodafone.com/drone/';
 
 	$scope.status='Loading';
-	$scope.vehicleStatus={};
+	$scope.mission={};
 	$scope.actions={availableActions:{}};
+	$scope.actionLog={items:[]};
+
 	//graph data for Battery
 	$scope.batteryCurrent = {};
 	
@@ -149,7 +151,7 @@ angular.module('droneFrontendApp')
 						$scope.vehicleStatus.heartbeat_status="OK";
 						$scope.vehicleStatus.heartbeat_colour={color:'green'};
 					} else {
-						$scope.vehicleStatus.heartbeat_status="No Heartbeat Received";
+						$scope.vehicleStatus.heartbeat_status="Last Heartbeat " + Math.round($scope.vehicleStatus.last_heartbeat) + " s";
 						$scope.vehicleStatus.heartbeat_colour={color:'red'};
 					}
 					if ($scope.vehicleStatus.ekf_ok==true) {
@@ -202,7 +204,80 @@ angular.module('droneFrontendApp')
 					console.log('API get error',data, status, headers, config);
 				});
 			}
+
+	function setActionText(inAction) {
+		var latLonAltText='';
+		if (inAction.coordinate){
+			latLonAltText="lat '" + Math.round(inAction.coordinate[0]*10000)/10000 + "' lon '"+ Math.round(inAction.coordinate[1]*10000)/10000 + "' alt '"+ Math.round(inAction.coordinate[2]*100)/100; 
+		} else {
+			latLonAltText="No lat/lon/alt info";
+		}
+		var textDescription="Unknown command with id "+inAction.command+", " + latLonAltText + ", params " + inAction.param1 + ", "+inAction.param2+", "+inAction.param3;
+
+		//Navigate to waypoint
+		if (inAction.command==16){
+			textDescription="Navigate to waypoint at "+ latLonAltText + "'.";
+			if (inAction.param1>0){
+				textDescription+=" Loiter for " + inAction.param1 + " seconds.";
+			}
+		}
+		//Loiter
+		if (inAction.command==17){
+			textDescription="Loiter at " + latLonAltText + " for an unlimited time.";
+		}
+		//RTL
+		if (inAction.command==20){
+			textDescription="Return to Launch.";
+		}
+		//Land
+		if (inAction.command==21){
+			textDescription="Land.";
+		}
+		//Takeoff
+		if (inAction.command==22){
+			textDescription="Takeoff to an altitude of " + Math.round(inAction.coordinate[2]*100)/100 + "m.";
+		}
+		//Region of Interest
+		if (inAction.command==80){
+			textDescription="Set the Region of Interest to " + latLonAltText + ".";
+		}
+		//Navigate to spline waypoint
+		if (inAction.command==82){
+			textDescription="Navigate to waypoint at "+ latLonAltText + "' using a spline path.";
+			if (inAction.param1>0){
+				textDescription+=" Loiter for " + inAction.param1 + " seconds.";
+			}
+		}
+		//start mission
+		if (inAction.name=='Start-Mission'){
+			textDescription="Start the pre-defined mission.";
+			if (inAction.param1>0){
+				textDescription+=" Loiter for " + inAction.param1 + " seconds.";
+			}
+		}
+		return textDescription
+	}
 			
+	$scope.getMission = function() {
+		$http.get($scope.apiURL + 'vehicle/1/missionActions').
+		    then(function(data, status, headers, config) {
+					console.log('API mission get success',data,status);	
+					$scope.mission=data.data;
+					console.log($scope.mission);
+					//manipulate the model
+					for(var missionActions in $scope.mission.items) {
+						$scope.mission.items[missionActions].textDescription=setActionText($scope.mission.items[missionActions]);
+					}
+				},
+				function(data, status, headers, config) {
+				  // log error
+					console.log('API mission get error',data, status, headers, config);
+				});
+
+
+	}
+
+
 	  
 	$scope.actionButton = function(inAction) {
 		console.log('Button Clicked',inAction);
@@ -218,6 +293,10 @@ angular.module('droneFrontendApp')
         'Content-Type' : 'application/json; charset=UTF-8'
     }
 }).then(function(data, status, headers, config) {
+			var actionItem=data.data.action;
+			actionItem['textDescription']=setActionText(actionItem);
+
+			$scope.actionLog.items.push(actionItem);
 			console.log('API  action POST success',data,status);
 			
 		},
