@@ -24,12 +24,22 @@ angular.module('droneFrontendApp')
 	$scope.actions={availableActions:{}};
 	$scope.actionLog={items:[]};
 
+    $scope.droneIcon = {
+      path: 'M 0 0 L -35 -100 L 35 -100 z',
+      fillColor: '#3884ff',
+      fillOpacity: 0.7,
+      scale: 1,
+      strokeColor: '#356cde',
+      rotation: 90,
+      strokeWeight: 1
+    };
+    
 	//graph data for Battery
 	$scope.batteryCurrent = {};
 	
-    $scope.batteryCurrent.labels= ['','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','',''];
+    $scope.batteryCurrent.labels= ['','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','',''];
     $scope.batteryCurrent.series= ['Current','Voltage'];
-    $scope.batteryCurrent.data=  [[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]];
+    $scope.batteryCurrent.data=  [[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]];
     $scope.batteryCurrent.options= { animation:false, scaleOverride:true, scaleStepWidth: 50, scaleStartValue: 0, scaleSteps:10,   scaleBeginAtZero: true, 
 		scales: {
                     xAxes: [{
@@ -79,9 +89,9 @@ angular.module('droneFrontendApp')
 	//graph data for Battery
 	$scope.altVel = {};
 	
-    $scope.altVel.labels= ['','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','',''];
+    $scope.altVel.labels= ['','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','',''];
     $scope.altVel.series= ['Velocity','Altitude'];
-    $scope.altVel.data=  [[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]];
+    $scope.altVel.data=  [[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]];
     $scope.altVel.options= { animation:false, scaleOverride:true, scaleStepWidth: 50, scaleStartValue: 0, scaleSteps:10,   scaleBeginAtZero: true, 
 		scales: {
                     xAxes: [{
@@ -130,7 +140,7 @@ angular.module('droneFrontendApp')
 			
 	$scope.markers=[];
 	//console.log('Calling API'); 
-	var intervalTimer = $interval(updateDrone, 1000);
+	var intervalTimer = $interval(updateDrone, 500);
 	var intervalActionsTimer = $interval(updateActions, 2000);
 	updateActions();
 	function updateDrone() {
@@ -168,29 +178,45 @@ angular.module('droneFrontendApp')
 						//console.log('Marker already exists');
 					} else
 					{
-						$scope.markers[0] = new google.maps.Marker({ title: "Drone: " + 1 });
+						$scope.markers[0] = new google.maps.Marker({ title: "Drone: " + 1, icon: 
+								{ path: google.maps.SymbolPath.FORWARD_CLOSED_ARROW,scale: 6, fillColor: 'yellow', fillOpacity: 0.8, strokeColor: 'red', strokeWeight: 1, rotation:$scope.vehicleStatus.heading} 
+							});
+
 						map.setCenter(new google.maps.LatLng( $scope.vehicleStatus.global_frame.lat, $scope.vehicleStatus.global_frame.lon ) );
 						$scope.markers[0].setMap(map);
 
 					}
+
+					//if heading has changed, recreate icon
+					if ($scope.markers[0].icon.rotation != $scope.vehicleStatus.heading) {
+						$scope.markers[0].setMap(null);
+						$scope.markers[0] = new google.maps.Marker({ title: "Drone: " + 1, icon: 
+								{ path: google.maps.SymbolPath.FORWARD_CLOSED_ARROW,scale: 6, fillColor: 'yellow', fillOpacity: 0.8, strokeColor: 'red', strokeWeight: 1, rotation:$scope.vehicleStatus.heading} 
+							});
+						$scope.markers[0].setMap(map);
+					}
 					$scope.markers[0].setPosition(new google.maps.LatLng($scope.vehicleStatus.global_frame.lat, $scope.vehicleStatus.global_frame.lon));
 					
+
+
+
+					//console.log('Marker:',$scope.markers[0]);
 					//log data for graphs
 					$scope.batteryCurrent.data[0].push($scope.vehicleStatus.battery.current);
 					$scope.batteryCurrent.data[1].push($scope.vehicleStatus.battery.voltage);
-					if ($scope.batteryCurrent.data[0].length>40) {
+					if ($scope.batteryCurrent.data[0].length>80) {
 						$scope.batteryCurrent.data[0].shift();
 					}
-					if ($scope.batteryCurrent.data[1].length>40) {
+					if ($scope.batteryCurrent.data[1].length>80) {
 						$scope.batteryCurrent.data[1].shift();
 					}
 					
-					$scope.altVel.data[0].push(Math.round($scope.vehicleStatus.groundspeed));
+					$scope.altVel.data[0].push(Math.round($scope.vehicleStatus.groundspeed*10)/10);
 					$scope.altVel.data[1].push(-Math.round($scope.vehicleStatus.local_frame.down));
-					if ($scope.altVel.data[0].length>40) {
+					if ($scope.altVel.data[0].length>80) {
 						$scope.altVel.data[0].shift();
 					}
-					if ($scope.altVel.data[1].length>40) {
+					if ($scope.altVel.data[1].length>80) {
 						$scope.altVel.data[1].shift();
 					}
                               
