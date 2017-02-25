@@ -140,6 +140,7 @@ angular.module('droneFrontendApp')
 
 			
 	$scope.markers=[];
+	$scope.flightPath=null;
 	//console.log('Calling API'); 
 	var intervalTimer = $interval(updateDrone, 500);
 	var intervalActionsTimer = $interval(updateActions, 2000);
@@ -295,6 +296,37 @@ angular.module('droneFrontendApp')
 					for(var missionActions in $scope.mission.items) {
 						$scope.mission.items[missionActions].textDescription=setActionText($scope.mission.items[missionActions]);
 					}
+
+
+
+					NgMap.getMap().then(function(map) {
+						
+						if ($scope.mission.items.length>0) {
+							//Mission polyline
+							var flightPlanCoordinates = [];
+							for(var actionIndex in $scope.mission.items) {
+								var missionAction=$scope.mission.items[actionIndex];
+								flightPlanCoordinates.push({lat:missionAction.coordinate[0],lng:missionAction.coordinate[1]});
+							}
+							if ($scope.flightPath) {
+								//polyline already exists so remove from map and delete
+								$scope.flightPath.setMap(null);
+								$scope.flightPath=null;
+							} 
+							$scope.flightPath = new google.maps.Polyline({
+							    path: flightPlanCoordinates,
+							    geodesic: true,
+							    strokeColor: '#FFFFFF',
+							    strokeOpacity: 0.5,
+							    strokeWeight: 2
+							});
+							$scope.flightPath.setMap(map);	
+						}
+					});
+
+
+
+
 				},
 				function(data, status, headers, config) {
 				  // log error
