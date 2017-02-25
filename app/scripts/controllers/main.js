@@ -23,6 +23,7 @@ angular.module('droneFrontendApp')
 	$scope.mission={};
 	$scope.actions={availableActions:{}};
 	$scope.actionLog={items:[]};
+	$scope.currentDrone=1;
 
     $scope.droneIcon = {
       path: 'M 0 0 L -35 -100 L 35 -100 z',
@@ -144,7 +145,7 @@ angular.module('droneFrontendApp')
 	var intervalActionsTimer = $interval(updateActions, 2000);
 	updateActions();
 	function updateDrone() {
-		$http.get($scope.apiURL + 'vehicle/1/').
+		$http.get($scope.apiURL + 'vehicle/'+$scope.currentDrone+'/').
 		    then(function(data, status, headers, config) {
 					//console.log('API get success',data,status);	
 					$scope.vehicleStatus=data.data.vehicleStatus;
@@ -178,7 +179,7 @@ angular.module('droneFrontendApp')
 						//console.log('Marker already exists');
 					} else
 					{
-						$scope.markers[0] = new google.maps.Marker({ title: "Drone: " + 1, icon: 
+						$scope.markers[0] = new google.maps.Marker({ title: "Drone: " + $scope.currentDrone, icon: 
 								{ path: google.maps.SymbolPath.FORWARD_CLOSED_ARROW,scale: 6, fillColor: 'yellow', fillOpacity: 0.8, strokeColor: 'red', strokeWeight: 1, rotation:$scope.vehicleStatus.heading} 
 							});
 
@@ -190,9 +191,9 @@ angular.module('droneFrontendApp')
 					//if heading has changed, recreate icon
 					if ($scope.markers[0].icon.rotation != $scope.vehicleStatus.heading) {
 						$scope.markers[0].setMap(null);
-						$scope.markers[0] = new google.maps.Marker({ title: "Drone: " + 1, icon: 
+						$scope.markers[0] = new google.maps.Marker({ title: "Drone: " + $scope.currentDrone, icon: 
 								{ path: google.maps.SymbolPath.FORWARD_CLOSED_ARROW,scale: 6, fillColor: 'yellow', fillOpacity: 0.8, strokeColor: 'red', strokeWeight: 1, rotation:$scope.vehicleStatus.heading} 
-							});
+							})
 						$scope.markers[0].setMap(map);
 					}
 					$scope.markers[0].setPosition(new google.maps.LatLng($scope.vehicleStatus.global_frame.lat, $scope.vehicleStatus.global_frame.lon));
@@ -285,7 +286,7 @@ angular.module('droneFrontendApp')
 	}
 			
 	$scope.getMission = function() {
-		$http.get($scope.apiURL + 'vehicle/1/missionActions').
+		$http.get($scope.apiURL + 'vehicle/'+$scope.currentDrone+'/missionActions').
 		    then(function(data, status, headers, config) {
 					console.log('API mission get success',data,status);	
 					$scope.mission=data.data;
@@ -314,7 +315,7 @@ angular.module('droneFrontendApp')
 		payload['name']=inAction.name;
 		console.log('Sending POST with payload ',payload);
 
-		$http.post($scope.apiURL + 'vehicle/1/action',payload,{
+		$http.post($scope.apiURL + 'vehicle/'+$scope.currentDrone+'/action',payload,{
     headers : {
         'Content-Type' : 'application/json; charset=UTF-8'
     }
@@ -334,7 +335,7 @@ angular.module('droneFrontendApp')
 	}
 
 	function updateActions() {
-		$http.get($scope.apiURL + 'vehicle/1/action').
+		$http.get($scope.apiURL + 'vehicle/'+$scope.currentDrone+'/action').
 		    then(function(data, status, headers, config) {
 					console.log('API action get success',data,status);	
 					//add or delete actions - if unchanged then leave model unchanged
