@@ -6,7 +6,6 @@
 			<div class="panel-heading">Config</div>
 			<div class="panel-body">
 				<Label>API Source</Label><input type="text" class=" form-control" name="apiURL" ng-model="apiURL" />
-				<Label>Drone #</Label><input type="text" class="form-control" name="currentDrone" ng-model="currentDrone" />
 			</div>
 		</div>
 	 	<div style="padding-top: 70%; position:relative;">
@@ -161,7 +160,8 @@
 				<table class="table table-striped">
 
 					<tr  ng-repeat="actionItem in actionLog.items" >
-						<th >{{actionItem.name}}</th>
+
+						<th ><span ng-style="actionItem.status === 'Error' ? { color:'red' } : { color:'black' }">{{actionItem.name}}</span></th>
 						<td >{{actionItem.textDescription}}</td>
 					</tr>
 				</table>

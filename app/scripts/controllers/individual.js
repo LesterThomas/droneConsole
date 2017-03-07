@@ -230,7 +230,7 @@ angular.module('droneFrontendApp')
 	function setActionText(inAction) {
 		var latLonAltText='';
 		if (inAction.coordinate){
-			latLonAltText="lat '" + Math.round(inAction.coordinate[0]*10000)/10000 + "' lon '"+ Math.round(inAction.coordinate[1]*10000)/10000 + "' alt '"+ Math.round(inAction.coordinate[2]*100)/100; 
+			latLonAltText="lat '" + Math.round(inAction.coordinate[0]*10000)/10000 + "' lon '"+ Math.round(inAction.coordinate[1]*10000)/10000 + "' alt '"+ Math.round(inAction.coordinate[2]*100)/100 + "'"; 
 		} else {
 			latLonAltText="No lat/lon/alt info";
 		}
@@ -238,7 +238,7 @@ angular.module('droneFrontendApp')
 
 		//Navigate to waypoint
 		if (inAction.command==16){
-			textDescription="Navigate to waypoint at "+ latLonAltText + "'.";
+			textDescription="Navigate to waypoint at "+ latLonAltText + ".";
 			if (inAction.param1>0){
 				textDescription+=" Loiter for " + inAction.param1 + " seconds.";
 			}
@@ -252,8 +252,8 @@ angular.module('droneFrontendApp')
 			textDescription="Return to Launch.";
 		}
 		//Land
-		if (inAction.command==21){
-			textDescription="Land.";
+		if (inAction.command==23){
+			textDescription="Land at " + latLonAltText + ".";
 		}
 		//Takeoff
 		if (inAction.command==22){
@@ -277,6 +277,11 @@ angular.module('droneFrontendApp')
 				textDescription+=" Loiter for " + inAction.param1 + " seconds.";
 			}
 		}
+		//error
+		if (inAction.status=='Error'){
+			textDescription=inAction.error;
+		}
+
 		return textDescription
 	}
 			

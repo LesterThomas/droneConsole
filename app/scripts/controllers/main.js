@@ -16,7 +16,8 @@ angular.module('droneFrontendApp')
   	$scope.droneIndex=0;
 	$scope.drones=[];
 	$scope.droneDetails=[];
-	var intervalTimer = $interval(updateDrones, 2000);
+	var intervalTimer = $interval(updateDrones, 1000);
+	updateDrones();
 	function updateDrones() {
 		$http.get($scope.apiURL + 'vehicle').
 		    then(function(data, status, headers, config) {
