@@ -414,6 +414,19 @@ angular.module('droneFrontendApp')
 					console.log('API actions get error',data, status, headers, config);
 				});
 			}
+	$scope.$on('$destroy', function() {
+	  // clean up stuff
+	  	console.log('###################################################'); 
+	  	console.log('Unloading Individual Controller'); 
+		$interval.cancel(intervalTimer);
+		$interval.cancel(intervalActionsTimer);
+		if ($scope.markers.length>0) {
+			$scope.markers[0].setMap(null);
+			$scope.markers.splice(0, 1);
+		}
+
+
+	})		
 	
 	console.log('Finished calling APIs'); 
 	

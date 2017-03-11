@@ -96,5 +96,13 @@ angular.module('droneFrontendApp')
 
 		}
 
+
+		$scope.$on('$destroy', function() {
+		  // clean up stuff
+		  	console.log('###################################################'); 
+		  	console.log('Unloading Main Controller'); 
+			$interval.cancel(intervalTimer);
+		})			
+
 	}]);
 
