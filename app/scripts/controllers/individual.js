@@ -304,6 +304,10 @@ angular.module('droneFrontendApp')
 							var flightPlanCoordinates = [];
 							for(var actionIndex in $scope.mission.items) {
 								var missionAction=$scope.mission.items[actionIndex];
+								if (missionAction.command==20) {  
+									//return-to-home so draw to planned home
+									missionAction.coordinate=$scope.mission.plannedHomePosition.coordinate;
+								}
 								flightPlanCoordinates.push({lat:missionAction.coordinate[0],lng:missionAction.coordinate[1]});
 							}
 							if ($scope.flightPath) {
@@ -424,15 +428,9 @@ angular.module('droneFrontendApp')
 			$scope.markers.splice(0, 1);
 		}
 		individualDrone.apiURL=$scope.apiURL;
-
-
-
 	})		
 	
 	console.log('Finished calling APIs'); 
-	
-
-
   
 
   }]);
