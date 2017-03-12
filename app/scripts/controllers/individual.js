@@ -12,9 +12,8 @@ angular.module('droneFrontendApp')
   .controller('IndividualCtrl', ['$scope', '$http','NgMap','$interval','$location','individualDrone',function ($scope,$http,NgMap,$interval,$location,individualDrone) {
 	  	  
   	console.log('Started controller'); 
-  	$scope.apiURL='http://localhost:1235/'; //http://sail.vodafone.com/drone/';
-
-	$scope.status='Loading';
+    $scope.apiURL=individualDrone.apiURL;
+    $scope.status='Loading';
 	$scope.mission={};
 	$scope.actions={availableActions:{}};
 	$scope.actionLog={items:[]};
@@ -424,6 +423,8 @@ angular.module('droneFrontendApp')
 			$scope.markers[0].setMap(null);
 			$scope.markers.splice(0, 1);
 		}
+		individualDrone.apiURL=$scope.apiURL;
+
 
 
 	})		

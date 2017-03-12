@@ -12,10 +12,12 @@ angular.module('droneFrontendApp')
   .controller('MainCtrl', ['$scope', '$http','NgMap','$interval','$location','individualDrone',function ($scope,$http,NgMap,$interval,$location,individualDrone) {
 	  
   	console.log('Started Main controller'); 
-  	$scope.apiURL='http://localhost:1235/'; //http://sail.vodafone.com/drone/';
+  	$scope.apiURL=individualDrone.apiURL;
   	$scope.droneIndex=0;
 	$scope.drones=[];
 	$scope.droneDetails=[];
+	$scope.markers=[];
+
 	var intervalTimer = $interval(updateDrones, 1000);
 	updateDrones();
 	function updateDrones() {
@@ -61,7 +63,10 @@ angular.module('droneFrontendApp')
 							vehicleStatus.ekf_status="EFK ERROR";
 							vehicleStatus.ekf_colour={color:'red'};
 						}
-						vehicleStatus.distance_home= Math.sqrt((vehicleStatus.local_frame.east)*(vehicleStatus.local_frame.east)+(vehicleStatus.local_frame.north)*(vehicleStatus.local_frame.north));                             
+						vehicleStatus.distance_home= Math.sqrt((vehicleStatus.local_frame.east)*(vehicleStatus.local_frame.east)+(vehicleStatus.local_frame.north)*(vehicleStatus.local_frame.north));   
+
+
+
 						//put the vehicle status in the array at the correct index;
 						var droneIndex=-1;
 						for (var i in $scope.drones){
@@ -75,6 +80,51 @@ angular.module('droneFrontendApp')
 							$scope.droneDetails[droneIndex]=vehicleStatus;
 						}
 					
+
+
+
+                    NgMap.getMap().then(function(map) {
+							
+                        //calculate average location and zoom for map
+                        var totalLat=0;
+                        var totalLon=0;
+
+                        for(var droneIndex in $scope.droneDetails) {
+                        	totalLat+=$scope.droneDetails[droneIndex].global_frame.lat;
+                        	totalLon+=$scope.droneDetails[droneIndex].global_frame.lon;
+                        }
+                        var avgLat=totalLat/$scope.droneDetails.length;
+                        var avgLon=totalLon/$scope.droneDetails.length;
+
+
+						for(var droneIndex in $scope.droneDetails) {
+							if ($scope.markers[droneIndex]) {
+						        //console.log('Marker already exists');
+					        } else
+	        				{
+						        $scope.markers[droneIndex] = new google.maps.Marker({ title: "Drone: " + $scope.droneDetails[droneIndex].id, icon: 
+								{ path: google.maps.SymbolPath.FORWARD_CLOSED_ARROW,scale: 6, fillColor: 'yellow', fillOpacity: 0.8, strokeColor: 'red', strokeWeight: 1, rotation:$scope.droneDetails[droneIndex].heading} 
+							    });
+						        map.setCenter(new google.maps.LatLng(avgLat, avgLon ) ); //Set map based on avg  Drone location
+
+						        $scope.markers[droneIndex].setMap(map);
+					        }
+
+					        //if heading has changed, recreate icon
+					        if ($scope.markers[droneIndex].icon.rotation != $scope.droneDetails[droneIndex].heading) {
+						        $scope.markers[droneIndex].setMap(null);
+						        $scope.markers[droneIndex] = new google.maps.Marker({ title: "Drone: " + $scope.droneDetails[droneIndex].id, icon: 
+								        { path: google.maps.SymbolPath.FORWARD_CLOSED_ARROW,scale: 6, fillColor: 'yellow', fillOpacity: 0.8, strokeColor: 'red', strokeWeight: 1, rotation:$scope.droneDetails[droneIndex].heading} 
+							        })
+						        $scope.markers[droneIndex].setMap(map);
+					        }
+					        $scope.markers[droneIndex].setPosition(new google.maps.LatLng($scope.droneDetails[droneIndex].global_frame.lat, $scope.droneDetails[droneIndex].global_frame.lon));
+					    }
+					});
+                          
+
+
+
 
 					},
 					function(data, status, headers, config) {
@@ -102,6 +152,15 @@ angular.module('droneFrontendApp')
 		  	console.log('###################################################'); 
 		  	console.log('Unloading Main Controller'); 
 			$interval.cancel(intervalTimer);
+			individualDrone.apiURL=$scope.apiURL;
+
+			for(var droneIndex in $scope.markers) {
+
+			    $scope.markers[droneIndex].setMap(null);
+			}
+			$scope.markers.splice(0, $scope.markers.length);
+		
+
 		})			
 
 	}]);
