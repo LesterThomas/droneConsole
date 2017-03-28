@@ -17,6 +17,7 @@ angular.module('droneFrontendApp')
 	$scope.drones=[];
 	$scope.droneDetails=[];
 	$scope.markers=[];
+	$scope.zones=[];
 
 	var intervalTimer = $interval(updateDrones, 1000);
 	updateDrones();
@@ -85,19 +86,16 @@ angular.module('droneFrontendApp')
 
                     NgMap.getMap().then(function(map) {
 							
-                        //calculate average location and zoom for map
-                        var totalLat=0;
-                        var totalLon=0;
+                        var bounds=new google.maps.LatLngBounds();
 
                         for(var droneIndex in $scope.droneDetails) {
-                        	totalLat+=$scope.droneDetails[droneIndex].global_frame.lat;
-                        	totalLon+=$scope.droneDetails[droneIndex].global_frame.lon;
+                        	bounds=bounds.extend({lat:$scope.droneDetails[droneIndex].global_frame.lat,lng:$scope.droneDetails[droneIndex].global_frame.lon});
                         }
-                        var avgLat=totalLat/$scope.droneDetails.length;
-                        var avgLon=totalLon/$scope.droneDetails.length;
 
 
 						for(var droneIndex in $scope.droneDetails) {
+
+							//draw drones (markers)
 							if ($scope.markers[droneIndex]) {
 						        //console.log('Marker already exists');
 					        } else
@@ -105,8 +103,8 @@ angular.module('droneFrontendApp')
 						        $scope.markers[droneIndex] = new google.maps.Marker({ title: "Drone: " + $scope.droneDetails[droneIndex].id, icon: 
 								{ path: google.maps.SymbolPath.FORWARD_CLOSED_ARROW,scale: 6, fillColor: 'yellow', fillOpacity: 0.8, strokeColor: 'red', strokeWeight: 1, rotation:$scope.droneDetails[droneIndex].heading} 
 							    });
-						        map.setCenter(new google.maps.LatLng(avgLat, avgLon ) ); //Set map based on avg  Drone location
-
+						        //map.setCenter(new google.maps.LatLng(avgLat, avgLon ) ); //Set map based on avg  Drone location
+						        map.fitBounds(bounds);
 						        $scope.markers[droneIndex].setMap(map);
 					        }
 
@@ -119,11 +117,23 @@ angular.module('droneFrontendApp')
 						        $scope.markers[droneIndex].setMap(map);
 					        }
 					        $scope.markers[droneIndex].setPosition(new google.maps.LatLng($scope.droneDetails[droneIndex].global_frame.lat, $scope.droneDetails[droneIndex].global_frame.lon));
+
+					        //draw authorized fly zones
+							if ($scope.zones[droneIndex]) {
+						        //console.log('Zone already exists');
+					        } else
+	        				{
+	        					if ($scope.droneDetails[droneIndex].zone.shape) {
+		        					var center={lat:$scope.droneDetails[droneIndex].zone.shape.lat,lng:$scope.droneDetails[droneIndex].zone.shape.lon};
+							        $scope.zones[droneIndex] = new google.maps.Circle({strokeColor:'#22FF22', strokeOpacity:0.8,fillColor:'#00FF00',fillOpacity:0.10,center:center ,radius: $scope.droneDetails[droneIndex].zone.shape.radius,map:map}); 
+							    }
+							}
+
 					    }
 					});
                           
 
-
+//{"zone":{"shape":{"name":"circle","radius":500}}}
 
 
 					},
