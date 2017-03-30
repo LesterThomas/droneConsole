@@ -18,6 +18,7 @@ angular.module('droneFrontendApp')
 	$scope.actions={availableActions:{}};
 	$scope.actionLog={items:[]};
 	$scope.simEnvironment=[];
+	$scope.zones=null;
 
     $scope.droneIcon = {
       path: 'M 0 0 L -35 -100 L 35 -100 z',
@@ -251,7 +252,17 @@ angular.module('droneFrontendApp')
 						$scope.markers[0].setMap(map);
 					}
 					$scope.markers[0].setPosition(new google.maps.LatLng($scope.vehicleStatus.global_frame.lat, $scope.vehicleStatus.global_frame.lon));
-					
+			        //draw authorized fly zones
+					if ($scope.zones) {
+				        //console.log('Zone already exists');
+			        } else
+    				{
+    					if ($scope.vehicleStatus.zone.shape) {
+        					var center={lat:$scope.vehicleStatus.zone.shape.lat,lng:$scope.vehicleStatus.zone.shape.lon};
+					        $scope.zones = new google.maps.Circle({strokeColor:'#22FF22', strokeOpacity:0.8,fillColor:'#00FF00',fillOpacity:0.10,center:center ,radius: $scope.vehicleStatus.zone.shape.radius,map:map}); 
+					    }
+					}
+			
 
 
 
