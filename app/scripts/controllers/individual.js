@@ -17,6 +17,7 @@ angular.module('droneFrontendApp')
 	$scope.mission={};
 	$scope.actions={availableActions:{}};
 	$scope.actionLog={items:[]};
+	$scope.simEnvironment=[];
 
     $scope.droneIcon = {
       path: 'M 0 0 L -35 -100 L 35 -100 z',
@@ -135,6 +136,65 @@ angular.module('droneFrontendApp')
 	$scope.markers=[];
 	$scope.flightPath=null;
 	//console.log('Calling API'); 
+	getSimEnvironment();
+	function getSimEnvironment() {
+	$http.get($scope.apiURL + 'vehicle/'+individualDrone.droneId+'/simulator').
+	    then(function(data, status, headers, config) {
+				console.log('getSimEnvironment API get success',data,status);	
+				$scope.simEnvironment=data.data.simulatorParams;
+			},
+				function(data, status, headers, config) {
+				  // log error
+					console.log('getSimEnvironment API get error',data, status, headers, config);
+				});
+			}
+
+	function updateSimEnvironment(key, value){
+		console.log('simEnvironment.' + key + ' value changed to ',value);	
+		var payload={"parameter":key,"value":value};
+		console.log('Sending POST with payload ',payload);
+
+		$http.post($scope.apiURL + 'vehicle/'+individualDrone.droneId+'/simulator',payload,{
+		    headers : {
+		        'Content-Type' : 'application/json; charset=UTF-8'
+		    }
+			}).then(function(data, status, headers, config) {
+					var actionItem=data.data.action;
+					console.log('API  action POST success',data,status);
+				},
+				function(data, status, headers, config) {
+				  	// log error
+					console.log('API actions POST error',data, status, headers, config);
+				});
+
+
+	}
+
+	$scope.$watch("simEnvironment.SIM_WIND_SPD", function (newValue) {
+		if (isNaN(newValue) || (newValue=="")) {
+			console.warn("SIM_WIND_SPD of'" + newValue + "' is not a number");
+		} else {
+			if ((newValue>=0) && (newValue<50)) {
+				updateSimEnvironment('SIM_WIND_SPD',newValue);
+			} else {
+				console.warn("SIM_WIND_SPD of'" + newValue + "' is out of bounds");
+			}
+		}
+
+	});
+
+	$scope.$watch("simEnvironment.SIM_WIND_DIR", function (newValue) {
+		if (isNaN(newValue) || (newValue=="")) {
+			console.warn("SIM_WIND_DIR of'" + newValue + "' is not a number");
+		} else {
+			if ((newValue>=0) && (newValue<=360)) {
+				updateSimEnvironment('SIM_WIND_DIR',newValue);
+			} else {
+				console.warn("SIM_WIND_DIR of'" + newValue + "' is out of bounds");
+			}
+		}
+	});
+
 	var intervalTimer = $interval(updateDrone, 500);
 	var intervalActionsTimer = $interval(updateActions, 2000);
 	updateActions();
