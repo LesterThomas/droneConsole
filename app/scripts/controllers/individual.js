@@ -196,14 +196,26 @@ angular.module('droneFrontendApp')
 		}
 	});
 
+	$scope.$watch("simEnvironment.SIM_GPS_NUMSATS", function (newValue) {
+		if (isNaN(newValue) || (newValue=="")) {
+			console.warn("SIM_GPS_NUMSATS of'" + newValue + "' is not a number");
+		} else {
+			if ((newValue>=0) && (newValue<=20)) {
+				updateSimEnvironment('SIM_GPS_NUMSATS',newValue);
+			} else {
+				console.warn("SIM_GPS_NUMSATS of'" + newValue + "' is out of bounds");
+			}
+		}
+	});
+
 	var intervalTimer = $interval(updateDrone, 500);
 	var intervalActionsTimer = $interval(updateActions, 2000);
 	updateActions();
 	function updateDrone() {
-		$http.get($scope.apiURL + 'vehicle/'+individualDrone.droneId+'/').
+		$http.get($scope.apiURL + 'vehicle/'+individualDrone.droneId).
 		    then(function(data, status, headers, config) {
 					//console.log('API get success',data,status);	
-					$scope.vehicleStatus=data.data.vehicleStatus;
+					$scope.vehicleStatus=data.data;
 					//manipulate the model
 					$scope.vehicleStatus.altitude=-$scope.vehicleStatus.local_frame.down;
 					if ($scope.vehicleStatus.armed==true) {
@@ -356,7 +368,7 @@ angular.module('droneFrontendApp')
 	}
 			
 	$scope.getMission = function() {
-		$http.get($scope.apiURL + 'vehicle/'+individualDrone.droneId+'/missionActions').
+		$http.get($scope.apiURL + 'vehicle/'+individualDrone.droneId+'/mission').
 		    then(function(data, status, headers, config) {
 					console.log('API mission get success',data,status);	
 					$scope.mission=data.data;
@@ -445,23 +457,27 @@ angular.module('droneFrontendApp')
 					console.log('API action get success',data,status);	
 					//add or delete actions - if unchanged then leave model unchanged
 					
-					//$scope.actions.availableActions=data.data.availableActions;
+					//$scope.actions.availableActions=data.data._actions;
 					
 					//manipulate the model
-					for(var action in data.data.availableActions) {
-						var actionName=data.data.availableActions[action].name;
+					for(var action in data.data._actions) {
+						var actionName=data.data._actions[action].name;
 						if ($scope.actions.availableActions[actionName]) {  //if action already exists, do nothing
 						} else
 						{
-							$scope.actions.availableActions[actionName]=data.data.availableActions[action];
+							$scope.actions.availableActions[actionName]=data.data._actions[action];
 							
 							
 							$scope.actions.availableActions[actionName].attributes=[];
-							for(var i in $scope.actions.availableActions[actionName].samplePayload) {
-								if (i!='name'){//do not push the name attribute
-									$scope.actions.availableActions[actionName].attributes.push({name:i,value:$scope.actions.availableActions[actionName].samplePayload[i]});
-									console.log (i,$scope.actions.availableActions[actionName].samplePayload[i]);
+							for(var i in $scope.actions.availableActions[actionName].fields) {
+								if ($scope.actions.availableActions[actionName].fields[i]['name']!='name') {//do not push the name attribute
+									console.log ($scope.actions.availableActions[actionName].fields[i]['name'],$scope.actions.availableActions[actionName].fields[i]['value']);
+									$scope.actions.availableActions[actionName].attributes.push({name:$scope.actions.availableActions[actionName].fields[i]['name'],value:$scope.actions.availableActions[actionName].fields[i]['value'] })
 								}
+								//if (i!='name'){//do not push the name attribute
+								//	$scope.actions.availableActions[actionName].attributes.push({name:i,value:$scope.actions.availableActions[actionName].samplePayload[i]});
+								//	console.log (i,$scope.actions.availableActions[actionName].samplePayload[i]);
+								//}
 							}
 						}
 					}
@@ -469,8 +485,8 @@ angular.module('droneFrontendApp')
 					for(var action in $scope.actions.availableActions) {
 						var actionName=$scope.actions.availableActions[action].name;
 						var found=false;
-						for (var index in data.data.availableActions) {
-							if (data.data.availableActions[index].name==actionName) {
+						for (var index in data.data._actions) {
+							if (data.data._actions[index].name==actionName) {
 								found=true;
 							}
 						}

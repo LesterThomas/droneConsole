@@ -3,12 +3,6 @@
 
 
 	<div  class="col-lg-12 col-sm-12">	 
-		<div class="panel panel-default panel-primary">
-			<div class="panel-heading">Config</div>
-			<div class="panel-body">
-				<Label>API Source</Label><input type="text" class=" form-control" name="apiURL" ng-model="apiURL" />
-			</div>
-		</div>
 	 	<div style="padding-top: 70%; position:relative;">
 			<div class="panel panel-default panel-primary" style="position: absolute; top: 0;    left: 0;    bottom: 0;    right: 0;">
 				<div class="panel-heading">Map</div>
@@ -183,7 +177,11 @@
 					</tr>
 					<tr  >
 						<th >Wind Direction</th>
-						<td ><input type="text" class=" form-control" name="simEnvironment.SIM_WIND_SPD" ng-model="simEnvironment.SIM_WIND_DIR" /></td>
+						<td ><input type="text" class=" form-control" name="simEnvironment.SIM_WIND_DIR" ng-model="simEnvironment.SIM_WIND_DIR" /></td>
+					</tr>
+					<tr  >
+						<th >Number of Satellites</th>
+						<td ><input type="text" class=" form-control" name="simEnvironment.SIM_GPS_NUMSATS" ng-model="simEnvironment.SIM_GPS_NUMSATS" /></td>
 					</tr>
 				</table>
 			</p>
