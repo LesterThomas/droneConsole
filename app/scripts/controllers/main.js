@@ -26,7 +26,7 @@ angular.module('droneFrontendApp')
 			$http.get($scope.apiURL + 'vehicle').
 			    then(function(data, status, headers, config) {
 						console.log('API get success',data,status);	
-						$scope.drones=data.data.vehicle;
+						$scope.drones=data.data._embedded.vehicle;
 						
 					},
 					function(data, status, headers, config) {
