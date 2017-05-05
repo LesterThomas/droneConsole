@@ -14,6 +14,7 @@ angular.module('droneFrontendApp')
 
   	console.log('Started modal controller'); 
     $scope.apiURL=individualDrone.apiURL;
+    $scope.consoleRootURL=individualDrone.consoleRootURL;
 
 	$scope.progress=[false,false,false,false]
 	$scope.progressClass=['alert-warning','','',''],''
@@ -23,6 +24,8 @@ angular.module('droneFrontendApp')
 
 	var payload={};
 	payload['vehicleType']="simulated";
+	payload['name']=individualDrone.droneName;
+
 	console.log('Sending POST with payload ',payload);
 
 	$http.post($scope.apiURL + 'vehicle',payload,{headers : { 'Content-Type' : 'application/json; charset=UTF-8'  }}).then(function(data, status, headers, config) {
@@ -62,7 +65,7 @@ angular.module('droneFrontendApp')
 	$scope.backHome=function() {
 		console.log('backHome button pressed');
  		$scope.close('finished'); // close, but give 500ms for bootstrap to animate
-		window.location='/';
+		window.location=$scope.consoleRootURL;
 
 	}
 
