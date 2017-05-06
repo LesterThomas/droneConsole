@@ -13,6 +13,8 @@ angular.module('droneFrontendApp')
 	  	  
   	console.log('Started controller'); 
     $scope.apiURL=individualDrone.apiURL;
+    $scope.consoleRootURL=individualDrone.consoleRootURL;
+
     $scope.status='Loading';
 	$scope.mission={};
 	$scope.actions={availableActions:{}};
@@ -154,7 +156,7 @@ angular.module('droneFrontendApp')
 
 	function updateSimEnvironment(key, value){
 		console.log('simEnvironment.' + key + ' value changed to ',value);	
-		var payload={"parameter":key,"value":value};
+		var payload={"parameter":key,"value":parseFloat(value)};
 		console.log('Sending POST with payload ',payload);
 
 		$http.post($scope.apiURL + 'vehicle/'+individualDrone.droneId+'/simulator',payload,{
@@ -194,6 +196,13 @@ angular.module('droneFrontendApp')
 					$scope.vehicleStatus=data.data;
 					//manipulate the model
 					$scope.vehicleStatus.altitude=-$scope.vehicleStatus.local_frame.down;
+					$scope.vehicleStatus.gps_0.fix_type_text='No Fix';
+					if ($scope.vehicleStatus.gps_0.fix_type==2){
+						$scope.vehicleStatus.gps_0.fix_type_text='2D Fix';
+					} else if  ($scope.vehicleStatus.gps_0.fix_type==3){
+						$scope.vehicleStatus.gps_0.fix_type_text='3D Fix';
+					}
+
 					if ($scope.vehicleStatus.armed==true) {
 						$scope.vehicleStatus.armed_status="ARMED";
 						$scope.vehicleStatus.armed_colour={color:'red'};
@@ -408,7 +417,7 @@ angular.module('droneFrontendApp')
 			        'Content-Type' : 'application/json; charset=UTF-8'
 			    }}).then(function(data, status, headers, config) {
 				console.log('API  action DELETE success',data,status);
-				window.location='/';
+				window.location=$scope.consoleRootURL;
 			},
 			function(data, status, headers, config) {
 			  // log error
