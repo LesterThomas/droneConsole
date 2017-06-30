@@ -19,6 +19,8 @@ angular.module('droneFrontendApp')
 
 
 	var mapIntervalTimer = $interval(updateMap, 250);
+	var deleteMarketsTimer = $interval(deleteAllMarkers, 5000);
+	var deleteZonessTimer = $interval(deleteAllZones, 7000);
 	updateMap();
 	function updateMap() {
 
@@ -73,6 +75,20 @@ angular.module('droneFrontendApp')
 	}
 
 
+	function deleteAllMarkers() {
+		for(var droneIndex in $scope.markers) {
+		    $scope.markers[droneIndex].setMap(null);
+		}
+		$scope.markers.splice(0, $scope.markers.length);
+	}
+
+	function deleteAllZones() {
+		for(var droneIndex in $scope.zones) {
+		    $scope.zones[droneIndex].setMap(null);
+		}
+		$scope.zones.splice(0, $scope.zones.length);
+	}
+
 	$scope.selectIndividual=function(inDrone) {
 		console.log('Selected drone',inDrone);
 		droneService.droneId=inDrone.id;
@@ -87,13 +103,11 @@ angular.module('droneFrontendApp')
 	  	console.log('Unloading Main Controller'); 
 		droneService.apiURL=$scope.apiURL;
 		$interval.cancel(mapIntervalTimer);
+		$interval.cancel(deleteMarketsTimer);
+		$interval.cancel(deleteZonesTimer);
 
-		for(var droneIndex in $scope.markers) {
-
-		    $scope.markers[droneIndex].setMap(null);
-		}
-		$scope.markers.splice(0, $scope.markers.length);
-	
+		deleteAllMarkers();	
+		deleteAllZones();	
 
 	})			
 
