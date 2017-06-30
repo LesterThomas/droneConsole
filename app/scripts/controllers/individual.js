@@ -9,11 +9,11 @@
  */
    
 angular.module('droneFrontendApp')
-  .controller('IndividualCtrl', ['$scope', '$http','NgMap','$interval','$location','individualDrone',function ($scope,$http,NgMap,$interval,$location,individualDrone) {
+  .controller('IndividualCtrl', ['$scope', '$http','NgMap','$interval','$location','droneService',function ($scope,$http,NgMap,$interval,$location,droneService) {
 	  	  
   	console.log('Started controller'); 
-    $scope.apiURL=individualDrone.apiURL;
-    $scope.consoleRootURL=individualDrone.consoleRootURL;
+    $scope.apiURL=droneService.apiURL;
+    $scope.consoleRootURL=droneService.consoleRootURL;
 
     $scope.status='Loading';
 	$scope.mission={};
@@ -143,7 +143,7 @@ angular.module('droneFrontendApp')
 	//console.log('Calling API'); 
 	getSimEnvironment();
 	function getSimEnvironment() {
-	$http.get($scope.apiURL + 'vehicle/'+individualDrone.droneId+'/simulator').
+	$http.get($scope.apiURL + 'vehicle/'+droneService.droneId+'/simulator').
 	    then(function(data, status, headers, config) {
 				console.log('getSimEnvironment API get success',data,status);	
 				$scope.simEnvironment=data.data.simulatorParams;
@@ -159,7 +159,7 @@ angular.module('droneFrontendApp')
 		var payload={"parameter":key,"value":parseFloat(value)};
 		console.log('Sending POST with payload ',payload);
 
-		$http.post($scope.apiURL + 'vehicle/'+individualDrone.droneId+'/simulator',payload,{
+		$http.post($scope.apiURL + 'vehicle/'+droneService.droneId+'/simulator',payload,{
 		    headers : {
 		        'Content-Type' : 'application/json; charset=UTF-8'
 		    }
@@ -190,7 +190,7 @@ angular.module('droneFrontendApp')
 	var intervalActionsTimer = $interval(updateActions, 2000);
 	updateActions();
 	function updateDrone() {
-		$http.get($scope.apiURL + 'vehicle/'+individualDrone.droneId).
+		$http.get($scope.apiURL + 'vehicle/'+droneService.droneId).
 		    then(function(data, status, headers, config) {
 					//console.log('API get success',data,status);	
 					$scope.vehicleStatus=data.data;
@@ -231,7 +231,7 @@ angular.module('droneFrontendApp')
 						//console.log('Marker already exists');
 					} else
 					{
-						$scope.markers[0] = new google.maps.Marker({ title: "Drone: " + individualDrone.droneId, icon: 
+						$scope.markers[0] = new google.maps.Marker({ title: "Drone: " + droneService.droneId, icon: 
 								{ path: google.maps.SymbolPath.FORWARD_CLOSED_ARROW,scale: 6, fillColor: 'yellow', fillOpacity: 0.8, strokeColor: 'red', strokeWeight: 1, rotation:$scope.vehicleStatus.heading} 
 							});
 
@@ -243,7 +243,7 @@ angular.module('droneFrontendApp')
 					//if heading has changed, recreate icon
 					if ($scope.markers[0].icon.rotation != $scope.vehicleStatus.heading) {
 						$scope.markers[0].setMap(null);
-						$scope.markers[0] = new google.maps.Marker({ title: "Drone: " + individualDrone.droneId, icon: 
+						$scope.markers[0] = new google.maps.Marker({ title: "Drone: " + droneService.droneId, icon: 
 								{ path: google.maps.SymbolPath.FORWARD_CLOSED_ARROW,scale: 6, fillColor: 'yellow', fillOpacity: 0.8, strokeColor: 'red', strokeWeight: 1, rotation:$scope.vehicleStatus.heading} 
 							})
 						$scope.markers[0].setMap(map);
@@ -353,7 +353,7 @@ angular.module('droneFrontendApp')
 	}
 			
 	$scope.getMission = function() {
-		$http.get($scope.apiURL + 'vehicle/'+individualDrone.droneId+'/mission').
+		$http.get($scope.apiURL + 'vehicle/'+droneService.droneId+'/mission').
 		    then(function(data, status, headers, config) {
 					console.log('API mission get success',data,status);	
 					$scope.mission=data.data;
@@ -412,7 +412,7 @@ angular.module('droneFrontendApp')
 		if (confirm('Confirm disconnect?')){
 			//delete
 			console.log('disconnectDelete confirmed');
-			$http.delete($scope.apiURL + 'vehicle/'+individualDrone.droneId,{
+			$http.delete($scope.apiURL + 'vehicle/'+droneService.droneId,{
 			    headers : {
 			        'Content-Type' : 'application/json; charset=UTF-8'
 			    }}).then(function(data, status, headers, config) {
@@ -435,7 +435,7 @@ angular.module('droneFrontendApp')
 		payload['name']=inAction.name;
 		console.log('Sending POST with payload ',payload);
 
-		$http.post($scope.apiURL + 'vehicle/'+individualDrone.droneId+'/action',payload,{
+		$http.post($scope.apiURL + 'vehicle/'+droneService.droneId+'/action',payload,{
     headers : {
         'Content-Type' : 'application/json; charset=UTF-8'
     }
@@ -455,7 +455,7 @@ angular.module('droneFrontendApp')
 	}
 
 	function updateActions() {
-		$http.get($scope.apiURL + 'vehicle/'+individualDrone.droneId+'/action').
+		$http.get($scope.apiURL + 'vehicle/'+droneService.droneId+'/action').
 		    then(function(data, status, headers, config) {
 					console.log('API action get success',data,status);	
 					//add or delete actions - if unchanged then leave model unchanged
@@ -517,7 +517,7 @@ angular.module('droneFrontendApp')
 			$scope.markers[0].setMap(null);
 			$scope.markers.splice(0, 1);
 		}
-		individualDrone.apiURL=$scope.apiURL;
+		droneService.apiURL=$scope.apiURL;
 	})		
 	
 	console.log('Finished calling APIs'); 
