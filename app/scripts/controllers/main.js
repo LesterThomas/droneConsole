@@ -29,7 +29,8 @@ angular.module('droneFrontendApp')
             var bounds=new google.maps.LatLngBounds();
 
             for(var droneIndex in $scope.drones.collection) {
-            	bounds=bounds.extend({lat:$scope.drones.collection[droneIndex].vehicleStatus.global_frame.lat,lng:$scope.drones.collection[droneIndex].vehicleStatus.global_frame.lon});
+            	bounds=bounds.extend({lat:$scope.drones.collection[droneIndex].vehicleStatus.global_frame.lat+0.001,lng:$scope.drones.collection[droneIndex].vehicleStatus.global_frame.lon+0.001});
+            	bounds=bounds.extend({lat:$scope.drones.collection[droneIndex].vehicleStatus.global_frame.lat-0.001,lng:$scope.drones.collection[droneIndex].vehicleStatus.global_frame.lon-0.001});
             }
 
 
