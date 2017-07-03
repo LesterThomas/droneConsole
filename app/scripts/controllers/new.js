@@ -9,7 +9,7 @@
  */
    
 angular.module('droneFrontendApp')
-  .controller('NewCtrl', ['$scope', '$http','NgMap','$interval','$location','droneService','ModalService',function ($scope,$http,NgMap,$interval,$location,droneService,ModalService) {
+  .controller('NewCtrl', ['$scope', '$http','$interval','$location','droneService','ModalService',function ($scope,$http,$interval,$location,droneService,ModalService) {
 	
     $scope.apiURL=droneService.apiURL;
     $scope.consoleRootURL=droneService.consoleRootURL;
@@ -20,6 +20,10 @@ angular.module('droneFrontendApp')
     $scope.connectionStringPort="port";
     $scope.connectionStringType="tcp";
     $scope.vehicleName="drone name";
+    $scope.lat=51.4049;
+    $scope.lon=-1.3049;
+    $scope.alt=105;
+    $scope.dir=0;
 
   $scope.updateConnectionString=function(){
         $scope.connectionString=$scope.connectionStringType+":"+$scope.connectionStringIP+":"+$scope.connectionStringPort
