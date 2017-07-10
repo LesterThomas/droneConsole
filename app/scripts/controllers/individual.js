@@ -226,10 +226,12 @@ angular.module('droneFrontendApp')
 		        //console.log('Zone already exists');
 	        } else
 			{
-				if ($scope.drones.collection[$scope.droneIndex].vehicleStatus.zone.shape) {
-					var center={lat:$scope.drones.collection[$scope.droneIndex].vehicleStatus.zone.shape.lat,lng:$scope.drones.collection[$scope.droneIndex].vehicleStatus.zone.shape.lon};
-			        $scope.zones[0] = new google.maps.Circle({strokeColor:'#22FF22', strokeOpacity:0.8,fillColor:'#00FF00',fillOpacity:0.10,center:center ,radius: $scope.drones.collection[$scope.droneIndex].vehicleStatus.zone.shape.radius,map:map}); 
-			    }
+				if ($scope.drones.collection[$scope.droneIndex].vehicleStatus.zone){
+					if ($scope.drones.collection[$scope.droneIndex].vehicleStatus.zone.shape) {
+						var center={lat:$scope.drones.collection[$scope.droneIndex].vehicleStatus.zone.shape.lat,lng:$scope.drones.collection[$scope.droneIndex].vehicleStatus.zone.shape.lon};
+						$scope.zones[0] = new google.maps.Circle({strokeColor:'#22FF22', strokeOpacity:0.8,fillColor:'#00FF00',fillOpacity:0.10,center:center ,radius: $scope.drones.collection[$scope.droneIndex].vehicleStatus.zone.shape.radius,map:map}); 
+					}
+				}
 			}
 	
 
