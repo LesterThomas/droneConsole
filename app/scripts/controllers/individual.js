@@ -189,6 +189,17 @@ angular.module('droneFrontendApp')
 
 	}
 
+	//if vehicle is disarmed then delete the authorized zone
+	$scope.$watch("drones.collection[droneIndex].vehicleStatus.armed_status", function (newValue) {		
+		console.log("Armed status",newValue);	
+		if (newValue=="DISARMED"){
+			if ($scope.zones.length>0) {
+				$scope.zones[0].setMap(null);
+				$scope.zones.splice(0, 1);
+			}
+		}
+	});
+
 	$scope.$watch("simParamSelected", function (newValue) {			
 		$scope.simParamValue=$scope.simEnvironment[newValue];
 	});
@@ -226,7 +237,7 @@ angular.module('droneFrontendApp')
 		        //console.log('Zone already exists');
 	        } else
 			{
-				if ($scope.drones.collection[$scope.droneIndex].vehicleStatus.zone){
+				if (($scope.drones.collection[$scope.droneIndex].vehicleStatus.zone) && ($scope.drones.collection[$scope.droneIndex].vehicleStatus.armed_status=="ARMED")){
 					if ($scope.drones.collection[$scope.droneIndex].vehicleStatus.zone.shape) {
 						var center={lat:$scope.drones.collection[$scope.droneIndex].vehicleStatus.zone.shape.lat,lng:$scope.drones.collection[$scope.droneIndex].vehicleStatus.zone.shape.lon};
 						$scope.zones[0] = new google.maps.Circle({strokeColor:'#22FF22', strokeOpacity:0.8,fillColor:'#00FF00',fillOpacity:0.10,center:center ,radius: $scope.drones.collection[$scope.droneIndex].vehicleStatus.zone.shape.radius,map:map}); 
@@ -249,7 +260,7 @@ angular.module('droneFrontendApp')
 			}
 			
 			$scope.altVel.data[0].push(Math.round($scope.drones.collection[$scope.droneIndex].vehicleStatus.groundspeed*10)/10);
-			$scope.altVel.data[1].push(-Math.round($scope.drones.collection[$scope.droneIndex].vehicleStatus.local_frame.down));
+			$scope.altVel.data[1].push(Math.round($scope.drones.collection[$scope.droneIndex].vehicleStatus.global_relative_frame.alt));
 			if ($scope.altVel.data[0].length>80) {
 				$scope.altVel.data[0].shift();
 			}
@@ -295,6 +306,10 @@ angular.module('droneFrontendApp')
 		//Takeoff
 		if (inAction.command==22){
 			textDescription="Takeoff to an altitude of " + Math.round(inAction.coordinate[2]*100)/100 + "m.";
+		}
+		//Arm
+		if (inAction.command==400){
+			textDescription="Vehicle armed.";
 		}
 		//Region of Interest
 		if (inAction.command==80){
@@ -382,17 +397,19 @@ angular.module('droneFrontendApp')
 		if (confirm('Confirm disconnect?')){
 			//delete
 			console.log('disconnectDelete confirmed');
+
 			$http.delete($scope.apiURL + 'vehicle/'+droneService.droneId,{
 			    headers : {
 			        'Content-Type' : 'application/json; charset=UTF-8'
 			    }}).then(function(data, status, headers, config) {
 				console.log('API  action DELETE success',data,status);
-				window.location=$scope.consoleRootURL;
+				
 			},
 			function(data, status, headers, config) {
 			  // log error
 				console.log('API actions DELETE error',data, status, headers, config);
 			});
+			window.location=$scope.consoleRootURL;
 		} 
 	}
 	  
@@ -486,6 +503,10 @@ angular.module('droneFrontendApp')
 		if ($scope.markers.length>0) {
 			$scope.markers[0].setMap(null);
 			$scope.markers.splice(0, 1);
+		}
+		if ($scope.zones.length>0) {
+			$scope.zones[0].setMap(null);
+			$scope.zones.splice(0, 1);
 		}
 		droneService.apiURL=$scope.apiURL;
 	})		

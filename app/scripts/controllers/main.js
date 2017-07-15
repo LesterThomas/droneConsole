@@ -29,8 +29,10 @@ angular.module('droneFrontendApp')
             var bounds=new google.maps.LatLngBounds();
 
             for(var droneIndex in $scope.drones.collection) {
-            	bounds=bounds.extend({lat:$scope.drones.collection[droneIndex].vehicleStatus.global_frame.lat+0.003,lng:$scope.drones.collection[droneIndex].vehicleStatus.global_frame.lon+0.003});
-            	bounds=bounds.extend({lat:$scope.drones.collection[droneIndex].vehicleStatus.global_frame.lat-0.003,lng:$scope.drones.collection[droneIndex].vehicleStatus.global_frame.lon-0.003});
+            	if ($scope.drones.collection[droneIndex].vehicleStatus){
+	            	bounds=bounds.extend({lat:$scope.drones.collection[droneIndex].vehicleStatus.global_frame.lat+0.003,lng:$scope.drones.collection[droneIndex].vehicleStatus.global_frame.lon+0.003});
+	            	bounds=bounds.extend({lat:$scope.drones.collection[droneIndex].vehicleStatus.global_frame.lat-0.003,lng:$scope.drones.collection[droneIndex].vehicleStatus.global_frame.lon-0.003});
+	            }
             }
 
 
@@ -64,7 +66,7 @@ angular.module('droneFrontendApp')
 			        //console.log('Zone already exists');
 		        } else
 				{
-					if ($scope.drones.collection[droneIndex].vehicleStatus.zone){
+					if (($scope.drones.collection[droneIndex].vehicleStatus.zone) && ($scope.drones.collection[droneIndex].vehicleStatus.armed_status=="ARMED")){
 						if ($scope.drones.collection[droneIndex].vehicleStatus.zone.shape) {
 							var center={lat:$scope.drones.collection[droneIndex].vehicleStatus.zone.shape.lat,lng:$scope.drones.collection[droneIndex].vehicleStatus.zone.shape.lon};
 							$scope.zones[droneIndex] = new google.maps.Circle({strokeColor:'#22FF22', strokeOpacity:0.8,fillColor:'#00FF00',fillOpacity:0.10,center:center ,radius: $scope.drones.collection[droneIndex].vehicleStatus.zone.shape.radius,map:map}); 
