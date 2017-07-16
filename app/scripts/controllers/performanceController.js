@@ -23,7 +23,7 @@ angular.module('droneFrontendApp')
       $scope.containerIndex.push(containerId);
     }
     else if ($scope.stats[containerId].image.includes('droneproxy')){
-      $scope.proxyIndex.push(containerId);
+      $scope.containerIndex.push(containerId);
     } else if  ($scope.stats[containerId].image.includes('droneapi')){
       $scope.mainAPIIndex.push(containerId);  
     }    
@@ -53,7 +53,7 @@ angular.module('droneFrontendApp')
                 beginAtZero: true,
                                 steps: 10,
                                 stepValue: 10,
-                                max: 100
+                                max: 200
                             }
                         },{
               position: 'right',
