@@ -47,13 +47,13 @@
 					</div>
 					<div id="{{action.name}}" class="panel-collapse collapse"}">
 					  <div class="panel-body">
-						<p>{{action.description}}</p>
+						<p>{{action.title}}</p>
 						<div class="container-fluid">
 							<div class="row form-inline" ng-repeat="attribute in action.attributes" >
 								<label class="col-lg-2 col-md-2 col-sm-2 col-xs-2" for="usr">{{attribute.name}}:</label>
 								<input type="text" class="col-lg-4 col-md-4 col-sm-4 col-xs-4 form-control" name="attribute.name" ng-model="attribute.value" />
 							</div>
-							<button type="button" class="btn btn-primary" ng-click='actionButton(action)'>{{action.name}}</button>
+							<button ng-if="action.href" type="button" class="btn btn-primary" ng-click='actionButton(action)'>{{action.name}}</button>
 						</div>
 					  </div>
 					</div>

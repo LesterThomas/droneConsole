@@ -30,7 +30,11 @@ angular.module('droneFrontendApp')
 	$scope.simParamSelected='';
 	$scope.simParamValue='';
 	$scope.zones=[];
-
+	$scope.mappedAdvisories=[];
+	$scope.advisories=droneService.advisories;
+	$scope.advisoriesCount=0;
+	$scope.safeToArm='untested';
+	
     $scope.droneIcon = {
       path: 'M 0 0 L -35 -100 L 35 -100 z',
       fillColor: '#3884ff',
@@ -199,7 +203,40 @@ angular.module('droneFrontendApp')
 			}
 		}
 	});
+	
 
+
+	function redrawAdvisories(){
+	
+		if (($scope.drones.collection[$scope.droneIndex].vehicleStatus.armed_status=='DISARMED') && ($scope.safeToArm=='untested')){
+			$scope.safeToArm='tested';
+			droneService.queryAdvisories($scope.drones.collection[$scope.droneIndex].vehicleStatus.global_frame.lat,$scope.drones.collection[$scope.droneIndex].vehicleStatus.global_frame.lon);
+		}
+
+	
+		NgMap.getMap().then(function(map) {
+			var newAdvisoriesLength=Object.keys($scope.advisories.collection).length;
+			if (newAdvisoriesLength>$scope.advisoriesCount){
+				console.log('advisories changed');
+				$scope.advisoriesCount=newAdvisoriesLength;
+				
+				//delete old advisories
+				for (var mappedAdvisoryIndex in $scope.mappedAdvisories) {
+					$scope.mappedAdvisories[mappedAdvisoryIndex].setMap(null);
+				}
+				$scope.mappedAdvisories.splice(0, $scope.mappedAdvisories.length);
+
+				
+				for (var advisoryKey in $scope.advisories.collection) {
+					console.log('advisoryKey',advisoryKey);
+					var center={lat:$scope.advisories.collection[advisoryKey].latitude,lng:$scope.advisories.collection[advisoryKey].longitude};
+					$scope.mappedAdvisories.push(new google.maps.Circle({strokeColor:'#FF2222', strokeOpacity:0.8,fillColor:'#FF0000',fillOpacity:0.10,center:center ,radius: 2000,map:map})); 
+				}
+			}
+		});
+	}
+	
+	
 	$scope.$watch("simParamSelected", function (newValue) {			
 		$scope.simParamValue=$scope.simEnvironment[newValue];
 	});
@@ -244,6 +281,8 @@ angular.module('droneFrontendApp')
 					}
 				}
 			}
+
+			
 	
 
 
@@ -419,17 +458,20 @@ angular.module('droneFrontendApp')
 		for (var i=0;i<inAction.attributes.length;i++) {
 			payload[inAction.attributes[i].name]=inAction.attributes[i].value;
 		}
+
+		
 		payload['name']=inAction.name;
+		
 		console.log('Sending POST with payload ',payload);
 
 		$http.post($scope.apiURL + 'vehicle/'+droneService.droneId+'/action',payload,{
-    headers : {
-        'Content-Type' : 'application/json; charset=UTF-8'
-    }
-}).then(function(data, status, headers, config) {
+			headers : {
+				'Content-Type' : 'application/json; charset=UTF-8'
+			}
+		}).then(function(data, status, headers, config) {
 			var actionItem=data.data.action;
 			actionItem['textDescription']=setActionText(actionItem);
-
+	
 			$scope.actionLog.items.push(actionItem);
 			console.log('API  action POST success',data,status);
 			
@@ -438,10 +480,13 @@ angular.module('droneFrontendApp')
 		  // log error
 			console.log('API actions POST error',data, status, headers, config);
 		});
+		
 
 	}
 
 	function updateActions() {
+		
+		redrawAdvisories();
 		$http.get($scope.apiURL + 'vehicle/'+droneService.droneId+'/action').
 		    then(function(data, status, headers, config) {
 					console.log('API action get success',data,status);	
@@ -485,6 +530,20 @@ angular.module('droneFrontendApp')
 						}
 
 					}
+					
+					//if action is Arm then additional checks necessary
+					for(var action in $scope.actions.availableActions) {
+						var actionName=$scope.actions.availableActions[action].name;
+						if (actionName=='Arm'){
+							console.log("Additional checks for Arm action");
+							if ($scope.advisories.max_safe_distance<2500) { //if max safe distance is lass than 2500m then remove action (500m for drone line-of-sight and 2000m for advisory
+								delete $scope.actions.availableActions[action];	
+								//replace with warning
+								$scope.actions.availableActions['Cannot-Arm']={"name":"Cannot-Arm","title":"Cannot Arm: Check advisories (advisory distance is "+$scope.advisories.max_safe_distance+"m)","fields":[]};
+							}
+						}
+					}
+
 					
 					
 						
