@@ -215,6 +215,7 @@ angular.module('droneFrontendApp')
 
 	
 		NgMap.getMap().then(function(map) {
+			//console.log('Individual Map',map);
 			var newAdvisoriesLength=Object.keys($scope.advisories.collection).length;
 			if (newAdvisoriesLength>$scope.advisoriesCount){
 				console.log('advisories changed');
@@ -243,7 +244,6 @@ angular.module('droneFrontendApp')
 
 	var intervalTimer = $interval(updateDrone, 250);
 	var intervalActionsTimer = $interval(updateActions, 2000);
-	updateActions();
 	function updateDrone() {
 						
 			NgMap.getMap().then(function(map) {
@@ -553,6 +553,15 @@ angular.module('droneFrontendApp')
 					console.log('API actions get error',data, status, headers, config);
 				});
 			}
+			
+	$scope.deleteAllAdvisories=function() {
+		for(var advisoryIndex in $scope.mappedAdvisories) {
+		    $scope.mappedAdvisories[advisoryIndex].setMap(null);
+		}
+		$scope.mappedAdvisories.splice(0, $scope.mappedAdvisories.length);
+	}
+
+			
 	$scope.$on('$destroy', function() {
 	  // clean up stuff
 	  	console.log('###################################################'); 
@@ -567,6 +576,7 @@ angular.module('droneFrontendApp')
 			$scope.zones[0].setMap(null);
 			$scope.zones.splice(0, 1);
 		}
+		$scope.deleteAllAdvisories();
 		droneService.apiURL=$scope.apiURL;
 	})		
 	
