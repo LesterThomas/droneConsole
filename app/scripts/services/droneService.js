@@ -2,8 +2,8 @@ angular.module('droneFrontendApp')
 .service('droneService',['$http','$interval', function($http,$interval) {
 	var self=this;
     this.droneId=-1;
-    this.apiURL='HTTP://droneapi.ddns.net:1235/'
-    this.consoleRootURL='HTTP://droneapi.ddns.net:1235/static/app'
+    this.apiURL='HTTP://192.168.1.67:1235/'
+    this.consoleRootURL='HTTP://192.168.1.67:1235/static/app'
     this.droneName='';
     this.lat=0;
     this.lon=0;
@@ -63,7 +63,7 @@ angular.module('droneFrontendApp')
 		}
 
 	this.queryAdvisories=function(inLat,inLon){
-			var airmapURL='https://api.airmap.com/status/v2/point?latitude='+inLat+'&longitude='+inLon+'&buffer=3000&weather=true';
+			var airmapURL='https://api.airmap.com/status/v2/point?latitude='+inLat+'&longitude='+inLon+'&buffer=10000&weather=true';
 			console.log('AIRMAP URL:',airmapURL);
 			$http.get(airmapURL, { 
 				headers: {'X-API-Key': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjcmVkZW50aWFsX2lkIjoiY3JlZGVudGlhbHxBendXTDJKaGF4MEVRWUNlQlJCR2VVb0dKV2VhIiwiYXBwbGljYXRpb25faWQiOiJhcHBsaWNhdGlvbnxrOVFBZEJ3aE93M0JQT2ZZRzZlZ0pVUXdFRVhMIiwib3JnYW5pemF0aW9uX2lkIjoiZGV2ZWxvcGVyfE43Z2Q2eURobkdubnFOc2Q5eEpiS2hiWm1vWCIsImlhdCI6MTUwMDIwMTczOH0.HX-RbNqEGq_ic1ys0U5dvZCtvCPCgz2_z8ggxv5SHdo'}

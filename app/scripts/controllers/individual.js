@@ -252,7 +252,7 @@ angular.module('droneFrontendApp')
 			} else
 			{
 				$scope.markers[0] = new google.maps.Marker({ title: "Drone: " + droneService.droneId, icon: 
-						{ path: google.maps.SymbolPath.FORWARD_CLOSED_ARROW,scale: 6, fillColor: 'yellow', fillOpacity: 0.8, strokeColor: 'red', strokeWeight: 1, rotation:$scope.drones.collection[$scope.droneIndex].vehicleStatus.heading} 
+						{ path: google.maps.SymbolPath.FORWARD_CLOSED_ARROW,scale: 8, fillColor: 'yellow', fillOpacity: 0.8, strokeColor: 'red', strokeWeight: 1, rotation:$scope.drones.collection[$scope.droneIndex].vehicleStatus.heading} 
 					});
 
 				map.setCenter(new google.maps.LatLng( $scope.drones.collection[$scope.droneIndex].vehicleStatus.global_frame.lat, $scope.drones.collection[$scope.droneIndex].vehicleStatus.global_frame.lon ) );
