@@ -9,8 +9,14 @@
 			<div class="panel-body">
                 <div ng-if="loggedInUser.name">
                     <p>Welcome <b>{{loggedInUser.name}}</b> to the Drone Control Console.</p>
-                    <p>Your profile details are in the table below. You can view your inventory of drones or create a new simulated drone/connect to a real drone by clicking on the menu above. You can also view the performance of the server components and the network topology of the service by clicking on the <i>performance</i> and <i>network</i> manu items.
+                    <p>From this console you can:
+                    <ul>
+                    <li>View your inventory of any real or simulated drones you have created by clicking on the <i>Inventory</i> menu.</li>
+                    <li>Create a new simulated drone or connect to a real drone by clicking on the <i>New Drone</i> menu.</li>
+                    <li>View the performance of the server components and the network topology of the service by clicking on the <i>Performance</i> and <i>Network</i> menu items.</li>
+                    </ul>
                     <br /><br />
+                    <p>Your profile details are in the table below. </p>
                     <table class="table table-striped">
                         <tr>
                             <td>Name</td>
@@ -22,7 +28,7 @@
                         </tr>
                         <tr>
                             <td>APIKey</td>
-                            <th></th>
+                            <th>{{loggedInUser.api_key}}</th>
                         </tr>
                     </table>
                 </div>
@@ -31,6 +37,7 @@
                     <p>To access the console, you need to login with Facebook by clicking the button below.</p>
                 </div>
 				<facebook-login-button></facebook-login-button>
+
 			</div>
 		</div>
 	</div>
