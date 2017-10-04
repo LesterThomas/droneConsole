@@ -100,6 +100,7 @@ angular.module('droneFrontendApp')
         for(var statObj in data.data.containers) {
           var containerObj=data.data.containers[statObj];
           //console.log(containerObj);
+          containerObj.id=containerObj.id.substring(0,6);
           $scope.stats[containerObj.id]=containerObj;
         }
 
