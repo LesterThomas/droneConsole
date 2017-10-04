@@ -87,18 +87,18 @@ angular.module('droneFrontendApp')
 
 
   function getContainerStats() {
-  $http.get('http://test.droneapi/net:4000/stats').
+  $http.get('http://test.droneapi.net:4000/').
       then(function(data, status, headers, config) {
         console.log('getContainerStats API get success',data,status);
         //data has id, image, cpu
         //we want an array of the latest stat objects
         //$scope.stats.splice(0, $scope.stats.length);  //reset stats array to zero elements (without creating new array)
-        if (data.data.length>0){
+        if (data.data.containers.length>0){
           $scope.stats=[]; //delete every element from previous array
         }
 
-        for(var statObj in data.data) {
-          var containerObj=data.data[statObj];
+        for(var statObj in data.data.containers) {
+          var containerObj=data.data.containers[statObj];
           //console.log(containerObj);
           $scope.stats[containerObj.id]=containerObj;
         }
@@ -112,9 +112,13 @@ angular.module('droneFrontendApp')
             //build new baseline
             addGraphBaseline(statObj.id);
           }
-          $scope.containers[statObj.id].data[0].push(statObj.cpu);
+          $scope.containers[statObj.id].data[0].push(statObj.total_cpu);
+          $scope.containers[statObj.id].data[1].push(statObj.total_memory);
           if ($scope.containers[statObj.id].data[0].length>80) {
             $scope.containers[statObj.id].data[0].shift();
+          }
+          if ($scope.containers[statObj.id].data[1].length>80) {
+            $scope.containers[statObj.id].data[1].shift();
           }
         }
 
