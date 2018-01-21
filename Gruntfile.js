@@ -70,9 +70,9 @@ module.exports = function (grunt) {
     // The actual grunt server settings
     connect: {
       options: {
-        port: 1237,
+        port: 80,
         // Change this from localhost to '0.0.0.0' to access the server from outside.
-        hostname: '0.0.0.0',
+        hostname: 'droneapi.ddns.net',
         livereload: 35729
       },
       livereload: {
@@ -220,7 +220,7 @@ module.exports = function (grunt) {
             }
           }
       }
-    }, 
+    },
 
     // Renames files for browser caching purposes
     filerev: {
